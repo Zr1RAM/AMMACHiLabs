@@ -7,14 +7,19 @@ public class testLogic : MonoBehaviour
     [SerializeField]
     int matrixSize = 3;
 
-    bool[] lightsBool;
+ 
+    [SerializeField]
+    bool[,] lightsBool;
     void CreateLights(int size)
     {
-        print("Lights size: " + size.ToString());
-        lightsBool = new bool[size];
+        print("Lights size: " + size.ToString() + "x" + size.ToString());
+        lightsBool = new bool[size,size];
         for (int i = 0; i < size; i++) 
         {
-            lightsBool[i] = false;        
+            for(int j = 0; j < size; j++)
+            {
+                lightsBool[i,j] = false;
+            }        
         }
         onGameInitialized(size);
 
@@ -22,51 +27,54 @@ public class testLogic : MonoBehaviour
     void onGameInitialized(int size)
     {
         List<int> randomIndexes = new List<int>();
-        int randomNumberOfLightsToTurnOn = Random.Range(0, size);
+        int randomNumberOfLightsToTurnOn = Random.Range(0, size*size);
         print("Random number of lights to turn on: " + randomNumberOfLightsToTurnOn.ToString());
         randomIndexes.Add(Random.Range(0, size));
         print("random indexes selected to turn on: \n" + randomIndexes[0].ToString());
-        lightsBool[randomIndexes[0]] = true;
+        lightsBool[randomIndexes[0]/size, randomIndexes[0] % size] = true;
         for (int i = 1; i < randomNumberOfLightsToTurnOn; i++)
         {
-            int randomValue = Random.Range(0, size);
+            int randomValue = Random.Range(0, size*size);
             while (randomIndexes.Contains(randomValue))
             {
-                randomValue = Random.Range(0, size);
+                randomValue = Random.Range(0, size*size);
             }
             randomIndexes.Add(randomValue);
             print(randomIndexes[i].ToString());
-            lightsBool[randomIndexes[i]] = true;
+            lightsBool[randomIndexes[i] / size, randomIndexes[i] % size] = true;
         }
+#if UNITY_EDITOR
         testLightBools();
+#endif
     }
+#if UNITY_EDITOR
     void testLightBools()
     {
         string output = "";
-        for (int i = 0;i < matrixSize * matrixSize; i++)
+        for (int i = 0;i < matrixSize; i++)
         {
-            if (i % matrixSize == 0)
+            output += "\n";
+            for(int j = 0; j < matrixSize; j++)
             {
-                output += "\n" + lightsBool[i].ToString() + " ";
-            }
-            else
-            {
-                output += lightsBool[i].ToString() + " ";
+                output += lightsBool[i, j].ToString() + " ";
             }
         }
         print(output);
     }
+#endif
     void Start()
     {
-        CreateLights(matrixSize * matrixSize);
+        CreateLights(matrixSize);
     }
 
     // Update is called once per frame
     void Update()
     {
+#if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            CreateLights(matrixSize * matrixSize);
+            CreateLights(matrixSize);
         }
+#endif
     }
 }
