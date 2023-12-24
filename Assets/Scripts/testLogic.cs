@@ -47,7 +47,41 @@ public class testLogic : MonoBehaviour
         testLightBools();
 #endif
     }
+
+    void updateLightsAroundLightAt(int[] index) 
+    {
+        int x = index[0], y = index[1];
+        lightsBool[x, y] = !lightsBool[x, y];
+        if ((y - 1) >= 0)
+        {
+            lightsBool[x, y - 1] = !lightsBool[x, y - 1];
+        }
+        if ((y + 1) < matrixSize)
+        {
+            lightsBool[x, y + 1] = !lightsBool[x, y + 1];
+        }
+        if ((x - 1) >= 0)
+        {
+            lightsBool[x - 1, y] = !lightsBool[x - 1, y];
+        }
+        if ((x + 1) < matrixSize)
+        {
+            lightsBool[x + 1, y] = !lightsBool[x + 1, y];
+        }
 #if UNITY_EDITOR
+        testLightBools();
+        print("Lights index selected: " + index[0].ToString() + ", " + index[1].ToString());
+#endif
+
+    }
+
+
+#if UNITY_EDITOR
+    // testing variables
+    [SerializeField]
+    int[] _arrayIndex;
+
+    // testing methods
     void testLightBools()
     {
         string output = "";
@@ -65,6 +99,8 @@ public class testLogic : MonoBehaviour
     void Start()
     {
         CreateLights(matrixSize);
+        LightsOutSolverTest testingSolver = new LightsOutSolverTest(lightsBool, matrixSize);
+        testingSolver.Solve();
     }
 
     // Update is called once per frame
@@ -73,7 +109,9 @@ public class testLogic : MonoBehaviour
 #if UNITY_EDITOR
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            CreateLights(matrixSize);
+            //CreateLights(matrixSize);
+            testLightBools();
+            updateLightsAroundLightAt(_arrayIndex);
         }
 #endif
     }
